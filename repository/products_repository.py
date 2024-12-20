@@ -30,23 +30,30 @@ class ProductsRepository:
         
         self.conn.commit()
 
-    def get_product_summary(self, product_id: str) -> ProductSummaryEntity:
+    def get_product_reviews(self, product_id: str) -> list[ProductReviewCleanEntity]:
+        logger.info(f"Retrieving all reviews for {product_id}")
         cursor = self.conn.cursor()
         query = sql.SQL('''
-            SELECT *
-            FROM gold_product_summary
-            WHERE child_asin = %s
+            select *
+            from silver_product_reviews_clean
+            where child_asin = %s
         ''')
 
-        cursor.execute(query, (product_id))
+        cursor.execute(query, (product_id,))
         
-        record = cursor.fetchone()
+        records = cursor.fetchall()
 
-        if record:
-            product_summary = ProductSummaryEntity(*record)
-            return product_summary
+        product_summaries = []
+        if records:
+            logger.info(f"Retrieved {len(records)} recrods")
+            for record in records:
+                product_summary = ProductReviewCleanEntity(*record)
+                logger.debug(f"RETRIEVED {product_summary.__dict__}")
+                product_summaries.append(product_summary)
+
+            return product_summaries
         else:
-            logger.error(f"Product with id: {product_id} not found in db")
+            logger.error(f"No products retrieved from database")
             return None
     
     def get_products_summary(self, page: int, page_size:int) -> list[ProductSummaryEntity]:
