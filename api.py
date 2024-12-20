@@ -36,12 +36,6 @@ async def get_products(page: int = 1, page_size: int = 50):
     Get all products with pagination
     """
     products = products_repository.get_products_summary(page, page_size)
-    
-    # jsonified_objects = []
-
-    # for product in products:
-    #     jsonified_object = jsonable_encoder(product)
-    #     jsonified_objects.append(jsonified_object)
     jsonified_objects = map_to_response(products)
     
     return jsonified_objects
