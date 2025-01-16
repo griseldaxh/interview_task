@@ -1,0 +1,8 @@
+#packages
+venv
+
+#env file
+.env
+
+
+
