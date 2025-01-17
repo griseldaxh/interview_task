@@ -10,6 +10,7 @@ from app.analyzer import ProductAnalyzer
 from app.database import Database
 from app.models import Review
 from app.aggregate_insights import ProductInsightAggregator
+from app.api import app
 
 def load_config() -> tuple[str, str]:
     """Load and return configuration from environment variables."""
@@ -96,17 +97,16 @@ async def main():
         # Process files and analyze reviews
         #process_mockup_files(processor)
         
-        #sawait analyze_reviews(analyzer, session)
+        #await analyze_reviews(analyzer, session)
         
-        aggregator = ProductInsightAggregator()
-        aggregator.aggregate_insights()
-        # Uncomment to run the FastAPI server
-        # app = FastAPI()
-        # uvicorn.run(app, host="0.0.0.0", port=8000)
+        #aggregator = ProductInsightAggregator()
+        #aggregator.aggregate_insights()
     
     except Exception as e:
         print(f"Application error: {str(e)}")
         exit(1)
 
 if __name__ == "__main__":
+    # Create and run the uvicorn server properly
     asyncio.run(main())
+    uvicorn.run(app, host="0.0.0.0", port=8000)
