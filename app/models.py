@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float, Date, TIMESTAMP, ForeignKey
+from sqlalchemy import Column, Integer, String, Float, Date, TIMESTAMP, ForeignKey, ARRAY
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from datetime import datetime
@@ -25,7 +25,7 @@ class Review(Base):
     review_description = Column(String)
     rating = Column(Integer)
     sentiment = Column(String)
-    issues = Column(String)
+    issues = Column(ARRAY(String))
 
     product = relationship("Product", back_populates="reviews")
 

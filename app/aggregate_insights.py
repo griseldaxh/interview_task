@@ -1,11 +1,13 @@
 from datetime import datetime
 from app.models import ProductInsight
 from sqlalchemy.orm import sessionmaker
+from app.database import Database
 
 Session = sessionmaker(bind=engine)
 
 def aggregate_product_insights():
-    session = Session()
+    db = Database()
+    session = db.get_session()
     products = session.query(Product).all()
 
     for product in products:

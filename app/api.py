@@ -1,9 +1,11 @@
 from fastapi import FastAPI, HTTPException
 from typing import Optional, List, Dict
 from sqlalchemy.orm import sessionmaker
-from app.models import ProductInsight, engine
+from app.database import Database
 
-Session = sessionmaker(bind=engine)
+db = Database()
+Session = db.Session
+
 app = FastAPI(title="Amazon Product Intelligence")
 
 class ProductInsightResponse(BaseModel):
