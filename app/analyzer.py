@@ -82,6 +82,6 @@ Issues: [list issues or "None" if no issues found]"""
             if line.lower().startswith('issues:'):
                 issues_text = line.split(':', 1)[1].strip()
                 if issues_text.lower() in ['none', 'no issues']:
-                    return ['No specific issues identified']
+                    return
                 return [issue.strip() for issue in issues_text.split(',')]
-        return ['No specific issues identified']
+        return

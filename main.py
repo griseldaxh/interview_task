@@ -9,6 +9,7 @@ from app.data_collection import DataCollector
 from app.analyzer import ProductAnalyzer
 from app.database import Database
 from app.models import Review
+from app.aggregate_insights import ProductInsightAggregator
 
 def load_config() -> tuple[str, str]:
     """Load and return configuration from environment variables."""
@@ -52,7 +53,7 @@ async def analyze_reviews(analyzer: ProductAnalyzer, db_session) -> None:
         print("No reviews to analyze")
         return
     
-    BATCH_SIZE = 100  # Adjust this value based on your needs
+    BATCH_SIZE = 200  # Adjust this value based on your needs
     total_reviews = len(reviews)
     print(f"Analyzing {total_reviews} reviews in batches of {BATCH_SIZE}...")
     
@@ -93,9 +94,12 @@ async def main():
         session = db.get_session()
         
         # Process files and analyze reviews
-        process_mockup_files(processor)
-        await analyze_reviews(analyzer, session)
+        #process_mockup_files(processor)
         
+        #sawait analyze_reviews(analyzer, session)
+        
+        aggregator = ProductInsightAggregator()
+        aggregator.aggregate_insights()
         # Uncomment to run the FastAPI server
         # app = FastAPI()
         # uvicorn.run(app, host="0.0.0.0", port=8000)
