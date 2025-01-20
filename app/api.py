@@ -61,20 +61,6 @@ class ProductsListResponse(BaseModel):
     class Config:
         orm_mode = True
 
-@app.get("/api/v1/products/{product_id}", response_model=ProductInsightResponse)
-async def get_product_insights(product_id: int):
-    """
-    Get insights for a specific product based on product_id.
-    """
-    session = Session()
-    product_insight = session.query(ProductInsight).filter(ProductInsight.product_id == product_id).first()
-
-    # If no insights are found, raise an HTTPException
-    if not product_insight:
-        raise HTTPException(status_code=404, detail="Product not found or no insights available.")
-
-    return product_insight
-
 @app.get("/api/v1/products", response_model=ProductsListResponse)
 async def get_products(page: int = 1, page_size: int = 50):
     """

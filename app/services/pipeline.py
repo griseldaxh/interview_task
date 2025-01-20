@@ -1,16 +1,42 @@
-from fastapi import FastAPI
-from dotenv import load_dotenv
 import os
+import sys
 import glob
-import uvicorn
-from typing import List
-import asyncio
-from app.data_collection import DataCollector
-from app.analyzer import ProductAnalyzer
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+
+from app.services.data_collection import DataCollector
+from app.services.analyzer import ProductAnalyzer
+from app.services.aggregate_insights import ProductInsightAggregator
 from app.database import Database
 from app.models import Review
-from app.aggregate_insights import ProductInsightAggregator
-from app.api import app
+from dotenv import load_dotenv
+
+async def main():
+    """Main application logic separated from entry point."""
+    database_url, openai_api_key = load_config()
+    
+    # Initialize components
+    processor = DataCollector()
+    analyzer = ProductAnalyzer(api_key=openai_api_key)
+    db = Database()
+    session = db.get_session()
+    
+    try:
+        # Process files and analyze reviews
+        await process_pipeline(processor, analyzer, session)
+    finally:
+        session.close()
+
+async def process_pipeline(processor: DataCollector, analyzer: ProductAnalyzer, session) -> None:
+    """Execute the complete processing pipeline."""
+    try:
+        process_mockup_files(processor)
+        await analyze_reviews(analyzer, session)
+                
+        aggregator = ProductInsightAggregator()
+        aggregator.aggregate_insights()
+    except Exception as e:
+        print(f"Pipeline error: {str(e)}")
+        raise
 
 def load_config() -> tuple[str, str]:
     """Load and return configuration from environment variables."""
@@ -19,7 +45,7 @@ def load_config() -> tuple[str, str]:
     openai_api_key = os.getenv("OPENAI_API_KEY")
     
     if not database_url or not openai_api_key:
-        raise ValueError("Missing required environment variables")
+        raise ValueError("Missing required environment variables: DATABASE_URL and/or OPENAI_API_KEY")
     
     return database_url, openai_api_key
 
@@ -83,30 +109,12 @@ async def analyze_reviews(analyzer: ProductAnalyzer, db_session) -> None:
     
     print("Review analysis completed")
 
-async def main():
+if __name__ == "__main__":
     """Main application entry point."""
-    try:
-        database_url, openai_api_key = load_config()
-        
-        # Initialize components
-        processor = DataCollector()
-        analyzer = ProductAnalyzer(api_key=openai_api_key)
-        db = Database()
-        session = db.get_session()
-        
-        # Process files and analyze reviews
-        #process_mockup_files(processor)
-        
-        #await analyze_reviews(analyzer, session)
-        
-        #aggregator = ProductInsightAggregator()
-        #aggregator.aggregate_insights()
+    import asyncio
     
+    try:
+        asyncio.run(main())
     except Exception as e:
         print(f"Application error: {str(e)}")
-        exit(1)
-
-if __name__ == "__main__":
-    # Create and run the uvicorn server properly
-    asyncio.run(main())
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+        sys.exit(1)

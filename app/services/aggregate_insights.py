@@ -54,4 +54,4 @@ class ProductInsightAggregator:
                 issues.extend(review.issues)
             else:
                 issues.append(review.issues)
-        return '; '.join(filter(None, issues))
+        return ' '.join(filter(None, issues))
