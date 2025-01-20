@@ -315,9 +315,3 @@ From the backend directory
 ```
 npm run test
 ```
-
-## Conclusion
-
-You have successfully set up a FastAPI backend with a React frontend to display Amazon product insights. Docker is used for running PostgreSQL in a container to manage product data. The system provides an API for retrieving product insights and supports pagination for large datasets.
-
-Let me know if you encounter any issues or need help with further enhancements! """
